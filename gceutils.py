@@ -3,12 +3,13 @@ import os
 import time
 from datetime import timedelta
 from os import mkdir
-from os.path import isdir
+from os.path import isdir, sep
 from zipfile import ZipFile
 
 ####################################################################################################################
 # Updates:
 # rsjrny    13 May 2019 New file for universal functions
+# telemaxx  11.January 2020 Using generic path seperator, which also works on *nix
 ####################################################################################################################
 log = logging.getLogger(__name__)
 
@@ -49,8 +50,8 @@ def removefiles(dirname, dellist):
         fname, fext = os.path.splitext(filename)
         # if this .ext is in the delete list, delete it
         if fext in dellist:
-            log.debug("deleting: " + dirname + "\\" + filename)
-            os.remove(dirname + "\\" + filename)
+            log.debug("deleting: " + dirname + sep + filename)
+            os.remove(os.path.join(dirname,filename))
     time.sleep(3)
 
 
@@ -82,7 +83,10 @@ def decoding_decider(formattype, data):
 
 def write_to_file(filename, content, mode):
     """Helper function that persists content to file."""
-    write_file = open(filename, mode)
+    if filename.endswith(".json"):
+        write_file = open(filename, mode, encoding="utf-8")
+    else:
+        write_file = open(filename, mode)
     write_file.write(content)
     write_file.close()
 

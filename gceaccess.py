@@ -12,6 +12,7 @@ import re
 import urllib.error
 import urllib.parse
 import urllib.request
+from os.path import sep
 
 import gceutils
 
@@ -150,7 +151,7 @@ def createjson(directory, stractId, actsum):
     )
     if device_detail:
         gceutils.write_to_file(
-            directory + "/" + stractId + "_app_info.json",
+            directory + sep + stractId + "_app_info.json",
             device_detail.decode(), "a",
         )
         json_device = json.loads(device_detail)
@@ -164,7 +165,7 @@ def createjson(directory, stractId, actsum):
             URL_GC_ACTIVITY + stractId + "/details"
         )
         gceutils.write_to_file(
-            directory + "/" + stractId + "_activity_detail.json",
+            directory + sep + stractId + "_activity_detail.json",
             activity_detail.decode(), "a",
         )
         json_detail = json.loads(activity_detail)
@@ -175,7 +176,7 @@ def createjson(directory, stractId, actsum):
     log.debug("Gear details URL: " + URL_GEAR_DETAIL + "activityId=" + stractId)
     gear_detail = http_req(URL_GEAR_DETAIL + "activityId=" + stractId)
     try:
-        gceutils.write_to_file(directory + "/" + stractId + "_gear_detail.json",
+        gceutils.write_to_file(directory + sep + stractId + "_gear_detail.json",
                                gear_detail.decode(),
                                "a", )
         json_gear = json.loads(gear_detail)
