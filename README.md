@@ -5,7 +5,7 @@ Download a copy of your Garmin Connect data, including stats and GPX tracks.
 
 Description 
 -----------
-This script will backup your personal Garmin Connect data. All downloaded data will go into a directory called `YYYY-MM-DD_garmin_connect_export/` in the current working directory. Activity records and details will go into a CSV file called `activities.csv`. GPX files (or whatever format you specify) containing track data, activity title, and activity descriptions are saved as well, using the Activity ID.
+This script(Python3) will backup your personal Garmin Connect data. All downloaded data will go into a directory called `YYYY-MM-DD_garmin_connect_export/` in the current working directory. Activity records and details will go into a CSV file called `activities.csv`. GPX files (or whatever format you specify) containing track data, activity title, and activity descriptions are saved as well, using the Activity ID.
 
 If there is no GPS track data (e.g., due to an indoor treadmill workout), a data file is still saved. If the GPX format is used, activity title and description data are saved. If the original format is used, Garmin may not provide a file at all and an empty file will be created. For activities where a GPX file was uploaded, Garmin may not have a TCX file available for download, so an empty file will be created. Since GPX is the only format Garmin should have for every activity, it is the default and preferred download format.
 
@@ -20,8 +20,9 @@ $ python3 gcexport3.py --help
 usage: gcexport3.py [-h] [--archive ARCHIVE] [--username [USERNAME]]
                     [--password [PASSWORD]] [-c [COUNT]] [-e [EXTERNAL]]
                     [-a [ARGS]] [-f [{gpx,tcx,original}]] [-d [DIRECTORY]]
-                    [-u] [--delete [DELETE [DELETE ...]]] [--debug]
-                    [--verbose] [--version]
+                    [-u] [-w [WORKFLOWDIRECTORY]]
+                    [--delete [DELETE [DELETE ...]]] [--debug] [--verbose]
+                    [--version]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -47,6 +48,9 @@ optional arguments:
   -d [DIRECTORY], --directory [DIRECTORY]
                         the directory to export to (default: './YYYY-MM-
                         DD_garmin_connect_export')
+  -w [WORKFLOWDIRECTORY], --workflowdirectory [WORKFLOWDIRECTORY]
+                        if downloading activity(format: 'original'),
+                        copy the file to this directory (default: not copying)
   -u, --unzip           if downloading ZIP files (format: 'original'), unzip
                         the file and removes the ZIP file
   --delete [DELETE [DELETE ...]]
@@ -55,14 +59,14 @@ optional arguments:
   --debug               turn on debugging log
   --verbose             increase output verbosity
   --version             print version and exit                  
-```
+
 
 Examples:
-`python gcexport3.py --count all` will download all of your data to a dated directory.
+`python3 gcexport3.py --count all` will download all of your data to a dated directory.
 
-`python gcexport3.py -d ~/MyActivities -c 3 -f original -u --username bobbyjoe --password bestpasswordever1` will download your three most recent activities in the FIT file format (or whatever they were uploaded as) into the `~/MyActivities` directory (unless they already exist). Using the `--username` and `--password` flags are not recommended because your password will be stored in your command line history. Instead, omit them to be prompted (and note that nothing will be displayed when you type your password).
+`python3 gcexport3.py -d ~/MyActivities -c 3 -f original -u --username bobbyjoe --password bestpasswordever1` will download your three most recent activities in the FIT file format (or whatever they were uploaded as) into the `~/MyActivities` directory (unless they already exist). Using the `--username` and `--password` flags are not recommended because your password will be stored in your command line history. Instead, omit them to be prompted (and note that nothing will be displayed when you type your password).
 
-Alternatively, you may run it with `./gcexport3.py` if you set the file as executable (i.e., `chmod u+x gcexport.py`).
+Alternatively, you may run it with `./gcexport3.py` if you set the file as executable (i.e., `chmod u+x gcexport3.py`).
 
 Of course, you must have Python installed to run this. Most Mac and Linux users should already have it. Also, as stated above, you should have some basic command line experience.
 

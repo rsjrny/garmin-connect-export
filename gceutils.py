@@ -9,7 +9,8 @@ from zipfile import ZipFile
 ####################################################################################################################
 # Updates:
 # rsjrny    13 May 2019 New file for universal functions
-# telemaxx  11.January 2020 Using generic path seperator, which also works on *nix
+# telemaxx  11.January 2020 Using generic path seperator, which also works on *nix. Solving Fenix Bug
+# telemaxx  20.January 2020 new Parameter -workflowdirectory
 ####################################################################################################################
 log = logging.getLogger(__name__)
 
@@ -85,7 +86,7 @@ def write_to_file(filename, content, mode):
     """Helper function that persists content to file."""
     if filename.endswith(".json"):
         write_file = open(filename, mode, encoding="utf-8")
-    else:
+    else: # zip
         write_file = open(filename, mode)
     write_file.write(content)
     write_file.close()

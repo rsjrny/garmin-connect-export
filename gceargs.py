@@ -2,7 +2,7 @@
 utility functions used in the garmin connect export
 
 """
-
+import os.path
 
 def addargs(parser, activities_directory):
     # global ARGS
@@ -62,6 +62,14 @@ def addargs(parser, activities_directory):
         help="if downloading ZIP files (format: 'original'), unzip the file and removes the ZIP file",
         action="store_true",
     )
+    parser.add_argument(
+        "-w",
+        "--workflowdirectory",
+        nargs="?",
+        default="",
+        help="if downloading activity(format: 'original'), copy the file to this directory (default: not copying)",
+    )   
+    
     parser.add_argument(
         "--delete",
         nargs="*",

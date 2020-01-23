@@ -9,6 +9,8 @@ Fork author: Michael P (https://github.com/moderation/)
 Date: August 25, 2018
 Updates: Russ Lilley
 Date: May 12, 2019
+Updates: Thomas Th.
+Date: Jan 20, 2020
 Description:    Use this script to export your fitness data from Garmin Connect.
                 See README.md for more information.
 
@@ -24,6 +26,7 @@ Description:    Use this script to export your fitness data from Garmin Connect.
 # rsjrny    13 May 2019 Added a delay between files to eliminated http timeouts and file in use conditions
 # rsjrny    13 May 2019 Fixed the fit_filename so the skip already downloaded would work
 # rsjrny    13 May 2019 Moved various functions to the gceutils.py file
+# telemaxx  20.Jan 2020 Fixed Fenix bug, runs now on win and linux, new --workflowdirectory ARGS
 ####################################################################################################################
 
 
@@ -38,7 +41,8 @@ import zipfile
 from datetime import datetime
 from getpass import getpass
 from os import mkdir, remove, stat
-from os.path import isdir, isfile, sep
+from os.path import isdir, isfile, sep, join
+from shutil import copyfile
 from subprocess import call
 from sys import argv
 from xml.dom.minidom import parseString
@@ -51,9 +55,10 @@ log = logging.getLogger()
 logging.basicConfig()
 SCRIPT_VERSION = "1.0.0"
 CURRENT_DATE = datetime.now().strftime("%Y-%m-%d")
-ACTIVITIES_DIRECTORY = "./" + CURRENT_DATE + "_garmin_connect_export"
+ACTIVITIES_DIRECTORY = "." + sep + CURRENT_DATE + "_garmin_connect_export"
 TOTAL_TO_DOWNLOAD = 0
 TOTAL_DOWNLOADED = 0
+TOTAL_COPIED = 0
 TOTAL_SKIPPED = 0
 TOTAL_RETRIEVED = 0
 
@@ -138,6 +143,7 @@ def finalizefiles(data, data_filename):
     original and the unzip option was selected unzip the file and remove the original file
 
     """
+    global TOTAL_COPIED
     if ARGS.format == "gpx" and data:
         # Validate GPX data. If we have an activity without GPS data (e.g., running on a
         # treadmill), Garmin Connect still kicks out a GPX (sometimes), but there is only
@@ -162,6 +168,11 @@ def finalizefiles(data, data_filename):
                 z = zipfile.ZipFile(zip_file)
                 for name in z.namelist():
                     z.extract(name, ARGS.directory)
+                    log.debug("extracting file: " + ARGS.directory + sep + name) 
+                    if len(ARGS.workflowdirectory) and join(ARGS.directory, name) != join(ARGS.workflowdirectory, name):
+                        copyfile(join(ARGS.directory, name), join(ARGS.workflowdirectory, name))
+                        log.debug("copy file to: " + ARGS.workflowdirectory + sep + name)  
+                        TOTAL_COPIED += 1
                 zip_file.close()
             else:
                 gceutils.printverbose(ARGS.verbose, "Skipping 0Kb zip file.")
@@ -191,7 +202,7 @@ def processactivity(alist):
         if data == "":
             print("/tempty file, no data existed in the downloaded file")
             continue
-
+        
         TOTAL_RETRIEVED += 1
         # write the file
         gceutils.write_to_file(data_filename, gceutils.decoding_decider(ARGS.format, data), file_mode)
@@ -231,6 +242,10 @@ except Exception as error:
 # create the activities directory if it is not there
 if not isdir(ARGS.directory):
     mkdir(ARGS.directory)
+    
+if len(ARGS.workflowdirectory):
+    if not isdir(ARGS.workflowdirectory):
+        mkdir(ARGS.workflowdirectory)
 
 CSV_FILENAME = ARGS.directory + sep + "activities.csv"
 CSV_EXISTED = isfile(CSV_FILENAME)
@@ -284,6 +299,7 @@ if ARGS.archive:
 # print the final counts
 print("Total Requested...." + str(TOTAL_TO_DOWNLOAD))
 print("Total Downloaded..." + str(TOTAL_RETRIEVED))
+print("Total Copied......." + str(TOTAL_COPIED))
 print("Total Skipped......" + str(TOTAL_SKIPPED))
 
 # open the csv file in an external program if requested
