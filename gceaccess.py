@@ -330,7 +330,7 @@ def buildcsvrecord(a, json_summary, json_gear, json_device, json_detail):
     csv_record += (
         empty_record
         if not json_device or "productDisplayName" not in json_device
-        else json_device["productDisplayName"] + " " + json_device["versionString"] + ","
+        else json_device["productDisplayName"].replace('\u0113','e') + " " + json_device["versionString"] + ","
     )
     csv_record += (
         empty_record
@@ -441,6 +441,44 @@ Elevation min. corrected (m),\
 Sample count\n"
     return header
 
+
+def buildFriendlyFilename(a, json_summary, json_gear, json_device, json_detail, ARGS):
+    """
+    crerates a friendly, readable string for the filename in workflowmode
+    """
+    empty_record = ""
+    seperator = "-"
+    file_name = ""
+    
+    file_name += (
+        empty_record
+        if "startTimeLocal" not in json_summary["summaryDTO"]
+        else json_summary["summaryDTO"]["startTimeLocal"][:19].replace(':','-')
+    )
+    file_name += seperator
+    file_name += (
+        empty_record
+        if "activityName" not in a or not a["activityName"]
+        else re.compile('[^a-zA-Z0-9_-]').subn('_', a["activityName"])[0][:30]
+    )
+    file_name += seperator
+    file_name += (
+        empty_record
+        if not json_device or "productDisplayName" not in json_device
+        else re.compile('[^a-zA-Z0-9_-]').subn('_', json_device["productDisplayName"].replace('\u0113','e'))[0][:12]
+    )  
+    file_name += seperator
+    file_name += (
+        empty_record
+        if "elevationGain" not in json_summary["summaryDTO"]
+        else "%dhm" % (json_summary["summaryDTO"]["elevationGain"])
+    )
+    
+    file_name += '.fit'
+    file_name = file_name.replace('-.fit','.fit')
+
+#    gceutils.printverbose(ARGS.verbose, 'Friendly name: ' + file_name)
+    return file_name
 
 COOKIE_JAR = http.cookiejar.CookieJar()
 OPENER = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(COOKIE_JAR))

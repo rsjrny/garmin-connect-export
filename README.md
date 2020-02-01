@@ -49,8 +49,9 @@ optional arguments:
                         the directory to export to (default: './YYYY-MM-
                         DD_garmin_connect_export')
   -w [WORKFLOWDIRECTORY], --workflowdirectory [WORKFLOWDIRECTORY]
-                        if downloading activity(format: 'original'),
-                        copy the file to this directory (default: not copying)
+                        if downloading activity(format: 'original' and
+                        --unzip): copy the file, given a friendly filename, to
+                        this directory (default: not copying)
   -u, --unzip           if downloading ZIP files (format: 'original'), unzip
                         the file and removes the ZIP file
   --delete [DELETE [DELETE ...]]
@@ -65,6 +66,8 @@ Examples:
 `python3 gcexport3.py --count all` will download all of your data to a dated directory.
 
 `python3 gcexport3.py -d ~/MyActivities -c 3 -f original -u --username bobbyjoe --password bestpasswordever1` will download your three most recent activities in the FIT file format (or whatever they were uploaded as) into the `~/MyActivities` directory (unless they already exist). Using the `--username` and `--password` flags are not recommended because your password will be stored in your command line history. Instead, omit them to be prompted (and note that nothing will be displayed when you type your password).
+
+`python3 gcexport3.py -d ~/MyActivities -c 3 -f original -u --username bobbyjoe --password bestpasswordever1  --workflowdirectory c:\hotfolder --unzip --delete .json` same as above, but  additionally copy the files additionally to c:\hotfolder for postprocessing. Then delete the temporary json files.
 
 Alternatively, you may run it with `./gcexport3.py` if you set the file as executable (i.e., `chmod u+x gcexport3.py`).
 

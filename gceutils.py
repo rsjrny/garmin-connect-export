@@ -10,7 +10,6 @@ from zipfile import ZipFile
 # Updates:
 # rsjrny    13 May 2019 New file for universal functions
 # telemaxx  11.January 2020 Using generic path seperator, which also works on *nix. Solving Fenix Bug
-# telemaxx  20.January 2020 new Parameter -workflowdirectory
 ####################################################################################################################
 log = logging.getLogger(__name__)
 

@@ -27,6 +27,8 @@ Description:    Use this script to export your fitness data from Garmin Connect.
 # rsjrny    13 May 2019 Fixed the fit_filename so the skip already downloaded would work
 # rsjrny    13 May 2019 Moved various functions to the gceutils.py file
 # telemaxx  20.Jan 2020 Fixed Fenix bug, runs now on win and linux, new --workflowdirectory ARGS
+# telemaxx  11.January 2020 Using generic path seperator, which also works on *nix. Solving Fenix Bug
+# telemaxx  31.January 2020 when using --workflowdirectory, using filenames with a friendly name
 ####################################################################################################################
 
 
@@ -137,7 +139,7 @@ def downloadfile(actid):
     return downloadurl, filemode, datafilename
 
 
-def finalizefiles(data, data_filename):
+def finalizefiles(data, data_filename, friendly_filename):
     """
     Finalize the datfile processing. If we are using format gpx see if we have tracks. If we are using
     original and the unzip option was selected unzip the file and remove the original file
@@ -170,8 +172,8 @@ def finalizefiles(data, data_filename):
                     z.extract(name, ARGS.directory)
                     log.debug("extracting file: " + ARGS.directory + sep + name) 
                     if len(ARGS.workflowdirectory) and join(ARGS.directory, name) != join(ARGS.workflowdirectory, name):
-                        copyfile(join(ARGS.directory, name), join(ARGS.workflowdirectory, name))
-                        log.debug("copy file to: " + ARGS.workflowdirectory + sep + name)  
+                        copyfile(join(ARGS.directory, name), join(ARGS.workflowdirectory, friendly_filename))
+                        gceutils.printverbose(ARGS.verbose, 'copy file to: ' + ARGS.workflowdirectory + sep + friendly_filename)
                         TOTAL_COPIED += 1
                 zip_file.close()
             else:
@@ -221,8 +223,8 @@ def processactivity(alist):
                                                                                  stractid, activity_summary)
         # CSV_FILE.write(csv_record)
         CSV_FILE.write(gceaccess.buildcsvrecord(a, json_summary, json_gear, json_device, json_detail))
-        finalizefiles(data, data_filename)
-
+        friendly_filename = gceaccess.buildFriendlyFilename(a, json_summary, json_gear, json_device, json_detail, ARGS)
+        finalizefiles(data, data_filename, friendly_filename)
 
 print("Welcome to Garmin Connect Exporter!")
 
