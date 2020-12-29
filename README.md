@@ -2,7 +2,7 @@ garmin-connect-export
 =====================
 
 ```
-I am no longer supporting this version. I have a new version which was Forked from pe-st/garmin-connect-export. The new version includes the zip archiving 
+I am no longer supporting this version, garmin-connect-export-1. I have a new version which was Forked from pe-st/garmin-connect-export. The new version includes the zip archiving 
 ```
 Download a copy of your Garmin Connect data, including stats and GPX tracks.
 
